@@ -1,9 +1,11 @@
 using Content.Server.Access.Systems;
 using Content.Server.DetailExaminable;
+using Content.Server.GameTicking;
 using Content.Server.Humanoid;
 using Content.Server.IdentityManagement;
 using Content.Server.Mind.Commands;
 using Content.Server.PDA;
+using Content.Server.Spawners.Components;
 using Content.Server.Station.Components;
 using Content.Shared.Access.Components;
 using Content.Shared.Access.Systems;
@@ -43,6 +45,8 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
     [Dependency] private readonly SharedAccessSystem _accessSystem = default!;
     [Dependency] private readonly IdentitySystem _identity = default!;
     [Dependency] private readonly MetaDataSystem _metaSystem = default!;
+    [Dependency] private readonly StationSystem _stationSystem = default!;
+    [Dependency] private readonly GameTicker _gameTicker = default!;
 
     private bool _randomizeCharacters;
 
@@ -208,6 +212,36 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
 
 
     #endregion Player spawning helpers
+
+
+    public void PopulateSpawnpoints(StationSpawningComponent stationSpawning, PlayerSpawningEvent args)
+    {
+        var points = EntityQueryEnumerator<SpawnPointComponent, TransformComponent>();
+
+        while (points.MoveNext(out var uid, out var spawnPoint, out var xform))
+        {
+            if (args.Station != null && _stationSystem.GetOwningStation(uid, xform) != args.Station)
+                continue;
+
+            if (spawnPoint.Job != null)
+            {
+                var spawnPointJobProto = new ProtoId<JobPrototype>(spawnPoint.Job.ID);
+                if (stationSpawning.JobSpawnPoints.TryGetValue(spawnPointJobProto, out var coordsList))
+                    coordsList.Add(xform.Coordinates);
+                else
+                    stationSpawning.JobSpawnPoints.Add(spawnPointJobProto, new List<EntityCoordinates>() { xform.Coordinates });
+            }
+
+            if (spawnPoint.SpawnType == SpawnPointType.LateJoin)
+                stationSpawning.LateJoinSpawnPoints.Add(xform.Coordinates);
+            // else if (_gameTicker.RunLevel != GameRunLevel.InRound &&
+            //          spawnPoint.SpawnType == SpawnPointType.Job &&
+            //          (args.Job == null || spawnPoint.Job?.ID == args.Job.Prototype))
+            // {
+            //     possiblePositions.Add(xform.Coordinates);
+            // }
+        }
+    }
 }
 
 /// <summary>

@@ -28,53 +28,22 @@ public sealed class SpawnPointSystem : EntitySystem
 
         var possiblePositions = new List<EntityCoordinates>();
 
-        Dictionary<ProtoId<JobPrototype>, List<EntityCoordinates>> jobSpawnsDict = new();
-        List<EntityCoordinates> lateJoinSpawnsList = new();
+        Dictionary<ProtoId<JobPrototype>, List<EntityCoordinates>>? jobSpawnsDict = default;
+        List<EntityCoordinates>? lateJoinSpawnsList = default;
         if (TryComp<StationSpawningComponent>(args.Station, out var stationSpawning))
         {
+            _stationSpawning.PopulateSpawnpoints(stationSpawning, args);
             jobSpawnsDict = stationSpawning.JobSpawnPoints;
             lateJoinSpawnsList = stationSpawning.LateJoinSpawnPoints;
-        }
 
-        if (_gameTicker.RunLevel == GameRunLevel.InRound && lateJoinSpawnsList is { Count: > 0 })
-        {
-            possiblePositions.AddRange(lateJoinSpawnsList);
-        }
-        else if (args.Job?.Prototype != null
-            && jobSpawnsDict.TryGetValue((ProtoId<JobPrototype>) args.Job.Prototype, out var coordinatesList))
-        {
-                possiblePositions.AddRange(coordinatesList);
-        }
-        else
-        {
-            var points = EntityQueryEnumerator<SpawnPointComponent, TransformComponent>();
-
-            while (points.MoveNext(out var uid, out var spawnPoint, out var xform))
+            if (_gameTicker.RunLevel == GameRunLevel.InRound)
             {
-                if (args.Station != null && _stationSystem.GetOwningStation(uid, xform) != args.Station)
-                    continue;
-
-                if (spawnPoint.Job != null)
-                {
-                    var spawnPointJobProto = new ProtoId<JobPrototype>(spawnPoint.Job.ID);
-                    if (jobSpawnsDict.TryGetValue(spawnPointJobProto, out var coordsList))
-                        coordsList.Add(xform.Coordinates);
-                    else
-                        jobSpawnsDict.Add(spawnPointJobProto, new List<EntityCoordinates>() { xform.Coordinates });
-                }
-
-                if (spawnPoint.SpawnType == SpawnPointType.LateJoin)
-                {
-                    lateJoinSpawnsList.Add(xform.Coordinates);
-                    if (_gameTicker.RunLevel == GameRunLevel.InRound)
-                        possiblePositions.Add(xform.Coordinates);
-                }
-                else if (_gameTicker.RunLevel != GameRunLevel.InRound &&
-                         spawnPoint.SpawnType == SpawnPointType.Job &&
-                         (args.Job == null || spawnPoint.Job?.ID == args.Job.Prototype))
-                {
-                    possiblePositions.Add(xform.Coordinates);
-                }
+                possiblePositions.AddRange(lateJoinSpawnsList);
+            }
+            else if (args.Job?.Prototype != null
+                     && jobSpawnsDict.TryGetValue((ProtoId<JobPrototype>) args.Job.Prototype, out var coordinatesList))
+            {
+                possiblePositions.AddRange(coordinatesList);
             }
         }
 
