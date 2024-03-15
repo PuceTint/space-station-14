@@ -28,13 +28,11 @@ public sealed class SpawnPointSystem : EntitySystem
 
         var possiblePositions = new List<EntityCoordinates>();
 
-        Dictionary<ProtoId<JobPrototype>, List<EntityCoordinates>>? jobSpawnsDict = default;
-        List<EntityCoordinates>? lateJoinSpawnsList = default;
         if (TryComp<StationSpawningComponent>(args.Station, out var stationSpawning))
         {
-            _stationSpawning.PopulateSpawnpoints(stationSpawning, args);
-            jobSpawnsDict = stationSpawning.JobSpawnPoints;
-            lateJoinSpawnsList = stationSpawning.LateJoinSpawnPoints;
+            _stationSpawning.PopulateStationSpawnpoints(stationSpawning, args);
+            var jobSpawnsDict = stationSpawning.JobSpawnPoints;
+            var lateJoinSpawnsList = stationSpawning.LateJoinSpawnPoints;
 
             if (_gameTicker.RunLevel == GameRunLevel.InRound)
             {
@@ -66,19 +64,19 @@ public sealed class SpawnPointSystem : EntitySystem
 
         var spawnLoc = _random.Pick(possiblePositions);
 
-        if (stationSpawning != null)
-        {
-            // Remove spawnpoint from pool unless it's the last one for this job.
-            if (args.Job?.Prototype != null
-                && jobSpawnsDict.TryGetValue((ProtoId<JobPrototype>) args.Job.Prototype, out var currentJobSpawns)
-                && currentJobSpawns.Count > 1)
-            {
-                currentJobSpawns.Remove(spawnLoc);
-            }
-
-            stationSpawning.JobSpawnPoints = jobSpawnsDict;
-            stationSpawning.LateJoinSpawnPoints = lateJoinSpawnsList;
-        }
+        // if (stationSpawning != null)
+        // {
+        //     // Remove spawnpoint from pool unless it's the last one for this job.
+        //     if (args.Job?.Prototype != null
+        //         && jobSpawnsDict.TryGetValue((ProtoId<JobPrototype>) args.Job.Prototype, out var currentJobSpawns)
+        //         && currentJobSpawns.Count > 1)
+        //     {
+        //         currentJobSpawns.Remove(spawnLoc);
+        //     }
+        //
+        //     stationSpawning.JobSpawnPoints = jobSpawnsDict;
+        //     stationSpawning.LateJoinSpawnPoints = lateJoinSpawnsList;
+        // }
 
         args.SpawnResult = _stationSpawning.SpawnPlayerMob(
             spawnLoc,

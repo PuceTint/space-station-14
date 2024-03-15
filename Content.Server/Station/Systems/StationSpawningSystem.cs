@@ -255,7 +255,7 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
     #endregion Player spawning helpers
 
 
-    public void PopulateSpawnpoints(StationSpawningComponent stationSpawning, PlayerSpawningEvent args)
+    public void PopulateStationSpawnpoints(StationSpawningComponent stationSpawning, PlayerSpawningEvent args)
     {
         var points = EntityQueryEnumerator<SpawnPointComponent, TransformComponent>();
 
