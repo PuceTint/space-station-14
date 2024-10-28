@@ -38,8 +38,8 @@ public sealed class SpawnPointSystem : EntitySystem
             {
                 possiblePositions.AddRange(lateJoinSpawnsList);
             }
-            else if (args.Job?.Prototype != null
-                     && jobSpawnsDict.TryGetValue((ProtoId<JobPrototype>) args.Job.Prototype, out var coordinatesList))
+            else if (args.Job != null
+                     && jobSpawnsDict.TryGetValue((ProtoId<JobPrototype>) args.Job, out var coordinatesList))
             {
                 possiblePositions.AddRange(coordinatesList);
             }
@@ -51,7 +51,7 @@ public sealed class SpawnPointSystem : EntitySystem
             // TODO: Refactor gameticker spawning code so we don't have to do this!
             var points2 = EntityQueryEnumerator<SpawnPointComponent, TransformComponent>();
 
-            if (points2.MoveNext(out _, out _, out var xform))
+            if (points2.MoveNext(out var spawnPoint, out var xform))
             {
                 possiblePositions.Add(xform.Coordinates);
             }
@@ -67,7 +67,7 @@ public sealed class SpawnPointSystem : EntitySystem
         // if (stationSpawning != null)
         // {
         //     // Remove spawnpoint from pool unless it's the last one for this job.
-        //     if (args.Job?.Prototype != null
+        //     if (args.Job != null
         //         && jobSpawnsDict.TryGetValue((ProtoId<JobPrototype>) args.Job.Prototype, out var currentJobSpawns)
         //         && currentJobSpawns.Count > 1)
         //     {
