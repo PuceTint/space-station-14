@@ -54,9 +54,6 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
     [Dependency] private readonly StationSystem _stationSystem = default!;
     [Dependency] private readonly GameTicker _gameTicker = default!;
 
-    [Dependency] private readonly ArrivalsSystem _arrivalsSystem = default!;
-    [Dependency] private readonly ContainerSpawnPointSystem _containerSpawnPointSystem = default!;
-
     private bool _randomizeCharacters;
 
     /// <inheritdoc/>
