@@ -561,7 +561,7 @@
   id: Opporozidone
   minTemp: 400 #Maybe if a method of reducing reagent temp exists one day, this could be -50
   reactants:
-    Cognizine: 
+    Cognizine:
       amount: 1
     Plasma:
       amount: 2
@@ -636,3 +636,13 @@
       catalyst: true
   products:
     Happiness: 4
+
+- type: reaction
+  id: VounarinPlus
+  reactants:
+    Vounarin:
+      amount: 1
+    Fersilicite:
+      amount: 1
+  products:
+    VounarinPlus: 2
