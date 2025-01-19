@@ -139,6 +139,23 @@
       maxTotalIntensity: 100
 
 - type: reaction
+  id: PotassiumSeaWaterExplosion
+  impact: High
+  priority: 20
+  reactants:
+    SeaWater:
+      amount: 1
+    Potassium:
+      amount: 1
+  effects:
+    - !type:ExplosionReactionEffect
+      explosionType: Default
+      maxIntensity: 100
+      intensityPerUnit: 0.5 # 50+50 reagent for maximum explosion
+      intensitySlope: 4
+      maxTotalIntensity: 100
+
+- type: reaction
   id: Smoke
   priority: 10
   impact: High
@@ -225,6 +242,20 @@
       maxRange: 6
       energyConsumption: 12500
       duration: 15
+
+- type: reaction
+  id: Flash
+  impact: High
+  priority: 20
+  reactants:
+    Aluminium:
+      amount: 1
+    Potassium:
+      amount: 1
+    Sulfur:
+      amount: 1
+  effects:
+    - !type:FlashReactionEffect
 
 - type: reaction
   id: TableSalt
@@ -522,3 +553,4 @@
       amount: 1
   products:
     Tazinide: 1
+

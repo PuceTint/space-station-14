@@ -22,7 +22,7 @@ Note that some assets are licensed under the non-commercial [CC-BY-NC-SA 3.0](ht
 
 ## Contributors
 
-TRIESTE PORT wouldn't be possible without all these wonderful people helping out to make this project come to life.
+TRIESTE PORT wouldn't be possible without all these wonderful people helping to make this project come to life.
 
 Pixeltheaertist - Project Lead
 
@@ -34,8 +34,12 @@ Lyroth - Programming
 
 Lupino - Debugging, General help
 
-McJak - Music
+McJak - Antagonist Music
 
 Målingen - Spriting, Lore help, General help
 
-Piss Wizard - Jellid concept
+Quri1q - Spriting
+
+Legally Aquired Monvi Plushie - Foraging Design
+
+Puce - Programming

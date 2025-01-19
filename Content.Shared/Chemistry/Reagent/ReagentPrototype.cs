@@ -17,6 +17,7 @@ using Robust.Shared.Serialization;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype.Array;
 using Robust.Shared.Utility;
+using Content.Shared.Plankton;
 
 namespace Content.Shared.Chemistry.Reagent
 {
@@ -99,6 +100,26 @@ namespace Content.Shared.Chemistry.Reagent
         [DataField]
         public bool MetamorphicChangeColor { get; private set; } = true;
 
+
+    // List of plankton components this reagent can contain
+    public List<PlanktonComponent> PlanktonComponents { get; set; } = new List<PlanktonComponent>();
+
+    // Method to check if the reagent contains plankton
+    public bool HasPlankton => PlanktonComponents.Any();
+
+    // Method to add plankton to the reagent (to be added in a solution later)
+    public void AddPlankton(PlanktonComponent plankton)
+    {
+        PlanktonComponents.Add(plankton);
+    }
+
+    // Method to remove plankton from the reagent
+    public void RemovePlankton(PlanktonComponent plankton)
+    {
+        PlanktonComponents.Remove(plankton);
+    }
+
+
         /// <summary>
         /// If this reagent is part of a puddle is it slippery.
         /// </summary>
@@ -143,7 +164,7 @@ namespace Content.Shared.Chemistry.Reagent
         [DataField]
         public SoundSpecifier FootstepSound = new SoundCollectionSpecifier("FootstepWater", AudioParams.Default.WithVolume(6));
 
-        public FixedPoint2 ReactionTile(TileRef tile, FixedPoint2 reactVolume, IEntityManager entityManager)
+        public FixedPoint2 ReactionTile(TileRef tile, FixedPoint2 reactVolume, IEntityManager entityManager, List<ReagentData>? data)
         {
             var removed = FixedPoint2.Zero;
 
@@ -152,7 +173,7 @@ namespace Content.Shared.Chemistry.Reagent
 
             foreach (var reaction in TileReactions)
             {
-                removed += reaction.TileReact(tile, this, reactVolume - removed, entityManager);
+                removed += reaction.TileReact(tile, this, reactVolume - removed, entityManager, data);
 
                 if (removed > reactVolume)
                     throw new Exception("Removed more than we have!");

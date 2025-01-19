@@ -1,5 +1,6 @@
 using Content.Server.StationEvents.Events;
 using Robust.Shared.Audio;
+using Robust.Shared.Collections;
 
 namespace Content.Server.StationEvents.Components;
 
@@ -21,6 +22,12 @@ public sealed partial class MassHallucinationsRuleComponent : Component
     [DataField("maxSoundDistance", required: true), ViewVariables(VVAccess.ReadWrite)]
     public float MaxSoundDistance;
 
+    [DataField("sweetwaterOnly"), ViewVariables(VVAccess.ReadWrite)]
+    public bool SweetwaterOnly = false;
+
     [DataField("sounds", required: true)]
     public SoundSpecifier Sounds = default!;
+
+    [DataField, ViewVariables(VVAccess.ReadOnly)]
+    public List<EntityUid> AffectedEntities = new();
 }

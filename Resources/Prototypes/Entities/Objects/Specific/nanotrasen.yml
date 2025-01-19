@@ -1,7 +1,7 @@
 - type: entity
   name: bluespace crystal
   parent: BaseItem
-  id: BluespaceCrystal
+  id: TP14BluespaceCrystal
   suffix: 20 BC
   description: It feels like it's everywhere and nowhere at the same time.
   components:
@@ -21,9 +21,11 @@
   - type: Currency
     price:
       BluespaceCrystal: 1
+  - type: Contraband
+    severity: Nanotrasen
 
 - type: entity
-  parent: BluespaceCrystal
+  parent: TP14BluespaceCrystal
   id: BluespaceCrystal1
   suffix: 1 BC
   components:
@@ -31,7 +33,7 @@
     count: 1
 
 - type: entity
-  parent: BluespaceCrystal
+  parent: TP14BluespaceCrystal
   id: BluespaceCrystal5
   suffix: 5 BC
   components:
@@ -39,7 +41,7 @@
     count: 5
 
 - type: entity
-  parent: BluespaceCrystal
+  parent: TP14BluespaceCrystal
   id: BluespaceCrystal10
   suffix: 10 BC
   components:
@@ -49,10 +51,10 @@
 # Uplinks
 - type: entity
   parent: [ BaseItem, StorePresetUplinkNT ]
-  id: BaseUplinkRadioNT
+  id: TP14BaseUplinkRadioNT
   name: nanotrasen uplink
   description: Suspiciously looking old radio...
-  suffix: Empty
+  suffix: 40
   components:
   - type: Sprite
     sprite: Objects/Devices/communication.rsi
@@ -69,5 +71,5 @@
     key: enum.StoreUiKey.Key
   - type: Store
     balance:
-      BluespaceCrystal: 0
+      BluespaceCrystal: 40
 

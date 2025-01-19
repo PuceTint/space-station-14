@@ -1,6 +1,6 @@
 - type: entity
   name: drifter
-  id: MobDrifter
+  id: TP14MobDrifter
   parent: MobSpaceBasic
   description: A spindly, opportunistic predator which injects prey with a paralyzing agent before siphoning their blood.
   components:
@@ -64,11 +64,11 @@
 - type: entity
   name: Fish
   parent: SimpleSpaceMobBase
-  id: MobFish
+  id: TP14MobFish
   description: It's a fish.
   components:
-  #- type: Body
-  #  prototype: SeaCreature # Gives em a stomach and gills for breathing water. They die without it.
+  - type: Body
+    prototype: SeaCreature # Gives em a stomach and gills for breathing water. They die without it.
   - type: Sprite
     sprite: Mobs/Animals/fish.rsi
     drawdepth: Mobs
@@ -117,7 +117,7 @@
           Quantity: 10
   - type: Butcherable
     spawned:
-    - id: FoodMeatFish
+    - id: TP14FoodMeatFish
       amount: 2
   - type: CombatMode
     combatToggleAction: ActionCombatModeToggleOff
@@ -128,20 +128,21 @@
     price: 400
   - type: BadFood
   - type: NonSpreaderZombie
-  - type: PreventSpiller
   - type: Damageable
     damageContainer: Biological
- # - type: Respirator
- #   damage:
-  #    types:
- #       Slash: 2
- #   maxSaturation: 15
- #   gaspEmote: Click # It's like a peeper, alright?
+  - type: Respirator # changed to asphyx for consistency/it works - lye
+    damage:
+      types:
+        Asphyxiation: 2
+    damageRecovery:
+      types:
+        Asphyxiation: -1.0
+    gaspEmote: Click # It's like a peeper, alright?
 
 - type: entity
   name: Fish
-  parent: MobFish
-  id: MobFish2
+  parent: TP14MobFish
+  id: TP14MobFish2
   description: It's a fish.
   components:
   - type: Sprite
@@ -159,8 +160,8 @@
 
 - type: entity
   name: Fish
-  parent: MobFish
-  id: MobFish3
+  parent: TP14MobFish
+  id: TP14MobFish3
   description: It's a fish.
   components:
   - type: Sprite
@@ -179,8 +180,8 @@
 - type: entity
   name: Fish
   suffix: mimic
-  parent: MobFish
-  id: MobFishMimic
+  parent: TP14MobFish
+  id: TP14MobFishMimic
   components:
   - type: Body
     prototype: AnimalMimic # just adds the Festering Tumor and removes the need for water to breathe
@@ -204,7 +205,7 @@
 - type: entity
   name: Mimic
   parent: MobSpaceBasic
-  id: MobMimic
+  id: TP14MobMimic
   description: A horrific ambush predator. It infests fish until disturbed by larger prey and uses elecricity to immobilize their targets.
   components:
   - type: MobThresholds
@@ -250,3 +251,75 @@
 
   # TODO: work on a new Tumorous Brain organ that spawns MimicSmart, which starts by infesting a randomly generated salvager outside Sweetwater. Make new stomach type that only eats raw meat and blood.
   # Also give MimicSmart the ability to burst out of it's host at any time, and use cloaking like a space cobra if it has to escape it's puppet.
+
+- type: entity
+  name: deathwhale
+  id: MobDeathWhale
+  parent: SimpleSpaceMobBase
+  description: Don't go into the light.
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: null
+  - type: PointLight
+    radius: 20
+    energy: 40
+    color: "#FFA400"
+  - type: DeathWhale
+  - type: AmbientSound
+    range: 30
+    volume: -15
+    sound:
+      path: /Audio/Effects/whale_groan.ogg
+  - type: MovementSpeedModifier
+    baseWalkSpeed : 0.7
+
+- type: entity
+  name: Spitter
+  parent: MobXeno
+  id: TP14MobSeaBarnacle
+  description: A heaving mass of coral and flesh, capable of spitting corrosive acid at it's prey.
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Mobs/Aliens/Xenos/spitter.rsi
+    offset: 0,0.3
+    layers:
+    - map: ["enum.DamageStateVisualLayers.Base"]
+      state: running
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      50: Dead
+  - type: SlowOnDamage
+    speedModifierThresholds:
+      25: 0.7
+  - type: HTN
+    rootTask:
+      task: SimpleRangedHostileCompound
+  - type: RechargeBasicEntityAmmo
+    rechargeCooldown: 0.75
+  - type: BasicEntityAmmoProvider
+    proto: BulletAcid
+    capacity: 1
+    count: 1
+  - type: Gun
+    fireRate: 0.75
+    useKey: false
+    selectedMode: FullAuto
+    availableModes:
+      - FullAuto
+    soundGunshot: /Audio/Weapons/Xeno/alien_spitacid.ogg
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.45
+        density: 235
+        mask:
+        - MobMask
+        layer:
+        - MobLayer
+  - type: MovementSpeedModifier
+    baseWalkSpeed : 0

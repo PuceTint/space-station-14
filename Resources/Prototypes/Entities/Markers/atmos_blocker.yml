@@ -102,7 +102,7 @@
 
 - type: entity
   name: Atmos Fix Water Marker
-  id: AtmosFixWaterMarker
+  id: TP14AtmosFixWaterMarker
   description: "Water @ gas miner pressure, T20C"
   parent: MarkerBase
   components:
@@ -116,3 +116,12 @@
           state: plasma
     - type: AtmosFixMarker
       mode: 7
+
+- type: entity
+  parent: AtmosFixNitrogenMarker
+  id: AtmosFixVoxMarker
+  suffix: Vox Atmosphere
+  description: "Nitrogen @ 101 kPa, 20C"
+  components:
+  - type: AtmosFixMarker
+    mode: 7

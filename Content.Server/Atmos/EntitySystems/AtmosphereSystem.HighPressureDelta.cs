@@ -20,6 +20,7 @@ namespace Content.Server.Atmos.EntitySystems
 
         [ViewVariables(VVAccess.ReadWrite)]
         public string? SpaceWindSound { get; private set; } = "/Audio/Effects/space_wind.ogg";
+        public string? WaterMoveSound { get; private set; } = "/Audio/Effects/water_move.ogg";
 
         private readonly HashSet<Entity<MovedByPressureComponent>> _activePressures = new(8);
 
@@ -93,14 +94,36 @@ namespace Content.Server.Atmos.EntitySystems
         private void HighPressureMovements(Entity<GridAtmosphereComponent> gridAtmosphere, TileAtmosphere tile, EntityQuery<PhysicsComponent> bodies, EntityQuery<TransformComponent> xforms, EntityQuery<MovedByPressureComponent> pressureQuery, EntityQuery<MetaDataComponent> metas)
         {
             // TODO ATMOS finish this
+        bool isWaterPresent = false;
+        bool isWaterTooMuch = false;
+
+        if (tile.Air != null)
+        {
+            // Check the moles of gasId 9 (water)
+            if (tile.Air.GetMoles(9) >= 10)  // Adjust the last threshhold as needed
+            {
+                isWaterPresent = true;
+            }
+
+            if (tile.Air.GetMoles(9) >= 120)
+            {
+                isWaterTooMuch = true;
+            }
+
+        }
 
             // Don't play the space wind sound on tiles that are on fire...
             if (tile.PressureDifference > 15 && !tile.Hotspot.Valid)
             {
-                if (_spaceWindSoundCooldown == 0 && !string.IsNullOrEmpty(SpaceWindSound))
+                if (_spaceWindSoundCooldown == 0 && !string.IsNullOrEmpty(SpaceWindSound) && !isWaterPresent && !isWaterTooMuch)
                 {
                     var coordinates = _mapSystem.ToCenterCoordinates(tile.GridIndex, tile.GridIndices);
                     _audio.PlayPvs(SpaceWindSound, coordinates, AudioParams.Default.WithVariation(0.125f).WithVolume(MathHelper.Clamp(tile.PressureDifference / 10, 10, 100)));
+                }
+                if (_spaceWindSoundCooldown == 0 && !string.IsNullOrEmpty(WaterMoveSound) && isWaterPresent && !isWaterTooMuch)
+                {
+                     var coordinates = _mapSystem.ToCenterCoordinates(tile.GridIndex, tile.GridIndices);
+                    _audio.PlayPvs(WaterMoveSound, coordinates, AudioParams.Default.WithVariation(0.125f).WithVolume(MathHelper.Clamp(tile.PressureDifference / 10, 10, 100)));
                 }
             }
 
@@ -210,7 +233,7 @@ namespace Content.Server.Atmos.EntitySystems
                                      MovedByPressureComponent.ProbabilityOffset);
 
             // Can we yeet the thing (due to probability, strength, etc.)
-            if (moveProb > MovedByPressureComponent.ProbabilityOffset && _robustRandom.Prob(MathF.Min(moveProb / 100f, 1f))
+            if (moveProb > MovedByPressureComponent.ProbabilityOffset && _random.Prob(MathF.Min(moveProb / 100f, 1f))
                                                                       && !float.IsPositiveInfinity(component.MoveResist)
                                                                       && (physics.BodyType != BodyType.Static
                                                                           && (maxForce >= (component.MoveResist * MovedByPressureComponent.MoveForcePushRatio)))
@@ -237,7 +260,7 @@ namespace Content.Server.Atmos.EntitySystems
                     // TODO: Technically these directions won't be correct but uhh I'm just here for optimisations buddy not to fix my old bugs.
                     if (throwTarget != EntityCoordinates.Invalid)
                     {
-                        var pos = ((throwTarget.ToMap(EntityManager, _transformSystem).Position - xform.WorldPosition).Normalized() + dirVec).Normalized();
+                        var pos = ((_transformSystem.ToMapCoordinates(throwTarget).Position - _transformSystem.GetWorldPosition(xform)).Normalized() + dirVec).Normalized();
                         _physics.ApplyLinearImpulse(uid, pos * moveForce, body: physics);
                     }
                     else
